@@ -1,0 +1,34 @@
+{% extends "base.html" %} {% block title %}Scoreboard{% endblock %} {% block
+content %}
+<header class="mb-4">
+  <p class="eyebrow mb-2">IE3132 · Group 78</p>
+  <h1 class="h2 mb-1">Audit scoreboard</h1>
+  <p class="text-secondary mb-0">Team standings by total points.</p>
+</header>
+<div class="panel table-responsive">
+  <table class="table table-dark table-hover align-middle mb-0">
+    <thead>
+      <tr>
+        <th scope="col">Rank</th>
+        <th scope="col">Team</th>
+        <th scope="col" class="text-end">Points</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for team in teams %}
+      <tr>
+        <th scope="row">{{ loop.index }}</th>
+        <td>{{ team.username }}</td>
+        <td class="text-end mono">{{ team.score }}</td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="3" class="text-center text-secondary py-4">
+          No teams registered yet.
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

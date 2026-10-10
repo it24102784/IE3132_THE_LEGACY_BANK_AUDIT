@@ -1,0 +1,297 @@
+{% extends "base.html" %} {% block title %}Dashboard - THE LEGACY BANK AUDIT{%
+endblock %} {% block content %}
+<div class="row justify-content-center">
+  <div class="col-xl-11 col-xxl-10">
+    <!-- Header Overview & Score Panel -->
+    <div class="card card-cyber mb-4">
+      <div class="card-body p-4">
+        <div class="row align-items-center gy-3">
+          <div class="col-lg-7">
+            <div class="d-flex align-items-center gap-3 mb-2">
+              <span class="badge bg-success code-font px-3 py-2 fs-6">
+                <i class="fa-solid fa-terminal me-2"></i>TARGET: 10.10.10.0/24
+              </span>
+              <span
+                class="badge bg-outline-secondary code-font text-muted border px-2 py-1 small"
+              >
+                SLIIT IE3132 CTF
+              </span>
+            </div>
+            <h2 class="fw-bold text-light mb-1">[!] THE LEGACY BANK AUDIT</h2>
+            <p class="text-muted mb-0">
+              Red-Team Security Assessment of Legacy Financial Infrastructure.
+              Investigate exposed staging services, exploit vulnerabilities,
+              move through the attack chain, and escalate to root.
+            </p>
+          </div>
+
+          <div class="col-lg-5">
+            <div class="p-3 rounded-3 bg-dark border border-secondary-subtle">
+              <div
+                class="d-flex justify-content-between align-items-center mb-2"
+              >
+                <span class="text-uppercase small fw-semibold text-muted"
+                  >Audit Progress</span
+                >
+                <span class="code-font text-info fw-bold"
+                  >{{ solved_count|default(solved|length)|default(0) }} / {{
+                  stages|length|default(6) }} Stages Solved</span
+                >
+              </div>
+
+              <!-- Progress Bar -->
+              {% set total_stages = stages|length if stages|length > 0 else 6 %}
+              {% set current_solved = solved|length if solved else 0 %} {% set
+              percent = ((current_solved / total_stages) * 100)|round|int %}
+
+              <div
+                class="progress mb-3"
+                style="height: 10px; background-color: #21262d"
+              >
+                <div
+                  class="progress-bar bg-success progress-bar-striped progress-bar-animated"
+                  role="progressbar"
+                  id="audit-progress-bar"
+                  aria-valuenow="{{ percent }}"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                ></div>
+                <script>
+                  document.getElementById("audit-progress-bar").style.width =
+                    "{{ percent }}%";
+                </script>
+              </div>
+
+              <div
+                class="d-flex justify-content-between align-items-center pt-1 border-top border-secondary-subtle"
+              >
+                <span class="small text-muted">Total Score Earned</span>
+                <span class="code-font text-success fw-bold fs-5">
+                  <i class="fa-solid fa-trophy me-1 text-warning"></i> {{
+                  total_score|default(0) }} / 1400 PTS
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Attack Chain Pathway Indicator -->
+        <div class="mt-4 pt-3 border-top border-secondary-subtle">
+          <div
+            class="d-flex align-items-center justify-content-between flex-wrap gap-2 text-center small code-font"
+          >
+            <span
+              class="badge bg-dark border border-success text-success px-3 py-2"
+              ><i class="fa-solid fa-radar me-1"></i> 1. Discover</span
+            >
+            <i
+              class="fa-solid fa-chevron-right text-muted d-none d-sm-inline"
+            ></i>
+            <span class="badge bg-dark border border-info text-info px-3 py-2"
+              ><i class="fa-solid fa-globe me-1"></i> 2. Access</span
+            >
+            <i
+              class="fa-solid fa-chevron-right text-muted d-none d-sm-inline"
+            ></i>
+            <span
+              class="badge bg-dark border border-warning text-warning px-3 py-2"
+              ><i class="fa-solid fa-key me-1"></i> 3. Decode</span
+            >
+            <i
+              class="fa-solid fa-chevron-right text-muted d-none d-sm-inline"
+            ></i>
+            <span
+              class="badge bg-dark border border-primary text-primary px-3 py-2"
+              ><i class="fa-solid fa-user-lock me-1"></i> 4. Authenticate</span
+            >
+            <i
+              class="fa-solid fa-chevron-right text-muted d-none d-sm-inline"
+            ></i>
+            <span
+              class="badge bg-dark border border-purple text-purple px-3 py-2"
+              style="color: #c084fc; border-color: #c084fc"
+              ><i class="fa-solid fa-magnifying-glass me-1"></i> 5.
+              Enumerate</span
+            >
+            <i
+              class="fa-solid fa-chevron-right text-muted d-none d-sm-inline"
+            ></i>
+            <span
+              class="badge bg-dark border border-danger text-danger px-3 py-2"
+              ><i class="fa-solid fa-crown me-1"></i> 6. Escalate</span
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stage Cards Grid -->
+    <h4 class="fw-bold text-light mb-3 d-flex align-items-center gap-2">
+      <i class="fa-solid fa-layer-group text-info"></i> CTF Challenge Stages
+    </h4>
+
+    {% set stage_details = { 1: { "title": "The Forgotten Server", "domain":
+    "Networking / Reconnaissance", "difficulty": "Easy", "diff_class":
+    "bg-success-subtle text-success border-success", "icon": "fa-radar", "desc":
+    "Discover the exposed staging server on the isolated CTF network. Perform
+    full network reconnaissance to identify active services and extract embedded
+    response indicators." }, 2: { "title": "The Legacy Employee Portal",
+    "domain": "Web Security", "difficulty": "Easy", "diff_class":
+    "bg-success-subtle text-success border-success", "icon": "fa-globe", "desc":
+    "Analyze the legacy employee login portal. Identify raw SQL query handling
+    weaknesses, bypass authentication controls, and gain access to the internal
+    dashboard." }, 3: { "title": "The Encoded Credentials", "domain":
+    "Cryptography", "difficulty": "Moderate", "diff_class": "bg-warning-subtle
+    text-warning border-warning", "icon": "fa-key", "desc": "Locate protected
+    internal backup configuration files. Analyze and reverse a multi-layer
+    cipher transformation chain combining Base64 encoding and a Vigenère
+    cipher." }, 4: { "title": "The Broken Second Factor", "domain":
+    "Authentication / Logic", "difficulty": "Moderate", "diff_class":
+    "bg-warning-subtle text-warning border-warning", "icon": "fa-user-lock",
+    "desc": "Analyze the legacy 2FA logic gate. Chain recovered employee
+    credentials and mathematical challenge variables to compute the
+    deterministic 2FA verification response." }, 5: { "title": "Inside the
+    Legacy Server", "domain": "Linux / System Security", "difficulty":
+    "Moderate-Hard", "diff_class": "bg-orange-subtle text-warning
+    border-warning", "icon": "fa-linux", "desc": "Authenticate via SSH as a
+    low-privileged user. Enumerate Linux system services, active processes, file
+    permissions, and scheduled tasks to locate privilege escalation vectors." },
+    6: { "title": "The Root Scheduler", "domain": "Privilege Escalation",
+    "difficulty": "Hard", "diff_class": "bg-danger-subtle text-danger
+    border-danger", "icon": "fa-crown", "desc": "Capstone challenge: Exploit a
+    misconfigured, world-writable maintenance script executed periodically by
+    root cron to gain root execution and retrieve the final root flag." } } %}
+
+    <div class="row g-4">
+      {% for stage in stages %} {% set stage_num = stage[0] %} {% set points =
+      stage[2] %} {% set meta = stage_details.get(stage_num, { "title": "Stage "
+      ~ stage_num, "domain": "Security Challenge", "difficulty": "Challenge",
+      "diff_class": "bg-secondary text-light", "icon": "fa-flag", "desc":
+      "Complete the stage task and submit the valid flag string." }) %} {% set
+      is_solved = stage_num in solved %}
+
+      <div class="col-lg-6">
+        <div
+          class="card card-cyber h-100 {% if is_solved %}border-success{% endif %}"
+          style="position: relative; overflow: hidden"
+        >
+          {% if is_solved %}
+          <div
+            style="
+              position: absolute;
+              top: 0;
+              right: 0;
+              width: 0;
+              height: 0;
+              border-style: solid;
+              border-width: 0 45px 45px 0;
+              border-color: transparent #238636 transparent transparent;
+            "
+          ></div>
+          <i
+            class="fa-solid fa-check text-light"
+            style="position: absolute; top: 5px; right: 7px; font-size: 0.8rem"
+          ></i>
+          {% endif %}
+
+          <div
+            class="card-header bg-transparent border-bottom border-secondary-subtle p-3 d-flex justify-content-between align-items-center"
+          >
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-dark border text-info code-font"
+                >Stage {{ stage_num }}</span
+              >
+              <span class="badge border {{ meta.diff_class }} small"
+                >{{ meta.difficulty }}</span
+              >
+            </div>
+            <span class="code-font fw-bold text-success">
+              <i class="fa-solid fa-star me-1 text-warning"></i>{{ points }} PTS
+            </span>
+          </div>
+
+          <div class="card-body p-4 d-flex flex-column justify-content-between">
+            <div>
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="fa-solid {{ meta.icon }} text-info fs-5"></i>
+                <h5 class="card-title fw-bold text-light mb-0">
+                  {{ meta.title }}
+                </h5>
+              </div>
+
+              <p class="text-muted small mb-2">
+                <strong class="text-secondary">Domain:</strong> {{ meta.domain
+                }}
+              </p>
+
+              <p class="card-text text-secondary small mb-4">{{ meta.desc }}</p>
+            </div>
+
+            <!-- Flag Submission / Status Form -->
+            <div class="pt-3 border-top border-secondary-subtle mt-auto">
+              {% if is_solved %}
+              <div
+                class="p-3 rounded bg-success-subtle border border-success text-success d-flex align-items-center justify-content-between"
+              >
+                <div class="d-flex align-items-center gap-2">
+                  <i class="fa-solid fa-circle-check fs-5"></i>
+                  <div>
+                    <div class="fw-bold code-font small">STATUS: COMPLETED</div>
+                    <div class="small text-success-emphasis">
+                      Flag accepted & points awarded
+                    </div>
+                  </div>
+                </div>
+                <span class="badge bg-success text-light code-font"
+                  >VERIFIED</span
+                >
+              </div>
+              {% else %}
+              <form method="POST" action="/submit" class="needs-validation">
+                <input type="hidden" name="stage" value="{{ stage_num }}" />
+                <div class="input-group">
+                  <span
+                    class="input-group-text bg-dark border-secondary-subtle text-muted code-font"
+                    ><i class="fa-solid fa-flag"></i
+                  ></span>
+                  <input
+                    type="text"
+                    name="flag"
+                    class="form-control bg-dark text-light border-secondary-subtle code-font"
+                    placeholder="FLAG{legacy_bank_stage{{ stage_num }}_...}"
+                    required
+                    autocomplete="off"
+                  />
+                  <button class="btn btn-cyber-primary code-font" type="submit">
+                    Submit <i class="fa-solid fa-paper-plane ms-1"></i>
+                  </button>
+                </div>
+              </form>
+              {% endif %}
+            </div>
+          </div>
+
+          <div
+            class="card-footer bg-transparent border-top border-secondary-subtle px-4 py-2 d-flex justify-content-between align-items-center small"
+          >
+            <span class="text-muted"
+              >Target IP:
+              <code class="text-info"
+                >10.10.10.{{ 2 if stage_num == 1 else (5 if stage_num in [2,3]
+                else 10) }}</code
+              ></span
+            >
+            <a
+              href="{{ url_for('hints', stage=stage_num) if url_for else '#' }}"
+              class="text-decoration-none text-warning hover-underline"
+            >
+              <i class="fa-solid fa-lightbulb me-1"></i> Hints
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends "base.html" %} {% block title %}Audit Stages{% endblock %} {% block
+content %}
+<header
+  class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-4"
+>
+  <div>
+    <p class="eyebrow mb-2">IE3132 · Penetration Testing · Group 78</p>
+    <h1 class="h2 mb-1">The Legacy Bank Audit</h1>
+    <p class="text-secondary mb-0">
+      Your next stage is ready. Complete it to continue.
+    </p>
+  </div>
+  <div class="panel px-4 py-3" aria-label="Team score">
+    <span class="text-secondary small d-block"
+      >{{ team.username }} · SCORE</span
+    >
+    <strong class="h3 mono mb-0"
+      >{{ team.score }} <span class="fs-6 text-secondary">pts</span></strong
+    >
+  </div>
+</header>
+
+<div class="row g-3">
+  {% for stage in stages if stage.unlocked %}
+  <div class="col-12 col-lg-6">
+    <article
+      class="panel stage-card p-3 p-md-4 {{ 'opacity-50' if not stage.unlocked else '' }}"
+    >
+      <div class="d-flex justify-content-between gap-3">
+        <div>
+          <p class="eyebrow mb-2">
+            Stage {{ '%02d'|format(stage.id) }} · {{ stage.domain }}
+          </p>
+          <h2 class="h5 mb-2">{{ stage.title }}</h2>
+          <p class="text-secondary small mb-3">
+            {{ stage.difficulty }} · {{ stage.points }} points
+          </p>
+        </div>
+        <span
+          class="badge align-self-start {{ 'text-bg-success' if stage.solved else ('text-bg-info' if stage.unlocked else 'text-bg-secondary') }}"
+        >
+          {% if stage.solved %}Solved &#10003;{% elif stage.unlocked
+          %}Unlocked{% else %}<span aria-hidden="true">&#128274;</span> Locked{%
+          endif %}
+        </span>
+      </div>
+      {% if stage.unlocked %}
+      <a
+        class="btn btn-sm {{ 'btn-outline-success' if stage.solved else 'btn-success' }}"
+        href="{{ url_for('stage_detail', stage_id=stage.id) }}"
+      >
+        {{ 'Review stage' if stage.solved else 'Open stage' }}
+      </a>
+      {% else %}
+      <span class="small text-secondary"
+        >Complete Stage {{ stage.id - 1 }} to unlock</span
+      >
+      {% endif %}
+    </article>
+  </div>
+  {% endfor %}
+</div>
+{% if stages|selectattr('solved')|list|length == stages|length %}
+<section class="panel p-4 text-center mt-3">
+  <h2 class="h5">Audit complete</h2>
+  <p class="text-secondary mb-0">You have completed all six stages.</p>
+</section>
+{% endif %} {% endblock %}

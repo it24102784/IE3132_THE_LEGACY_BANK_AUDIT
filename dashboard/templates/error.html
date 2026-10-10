@@ -1,0 +1,9 @@
+{% extends "base.html" %} {% block title %}Request Error{% endblock %} {% block
+content %}
+<section class="panel p-4 p-md-5">
+  <p class="eyebrow mb-2">Request not completed</p>
+  <h1 class="h3">Unable to continue</h1>
+  <p class="text-secondary mb-4">{{ message }}</p>
+  <a class="btn btn-outline-light" href="{{ url_for('index') }}">Return</a>
+</section>
+{% endblock %}
