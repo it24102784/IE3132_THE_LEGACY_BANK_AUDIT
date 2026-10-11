@@ -1,0 +1,106 @@
+<div class="ctf-auth-grid" aria-hidden="true"></div>
+<div class="ctf-auth-scanlines" aria-hidden="true"></div>
+<canvas class="ctf-auth-network" aria-hidden="true"></canvas>
+<div class="ctf-auth-reticle" aria-hidden="true"><span></span></div>
+<script>
+  (() => {
+    const canvas = document.querySelector(".ctf-auth-network");
+    const context = canvas instanceof HTMLCanvasElement ? canvas.getContext("2d") : null;
+    const reticle = document.querySelector(".ctf-auth-reticle");
+    const targets = document.querySelectorAll(".ctf-auth-target");
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+    if (context && canvas instanceof HTMLCanvasElement) {
+      let width = 0;
+      let height = 0;
+      let particles = [];
+      let frame = 0;
+
+      const resize = () => {
+        const ratio = Math.min(window.devicePixelRatio || 1, 2);
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = Math.round(width * ratio);
+        canvas.height = Math.round(height * ratio);
+        context.setTransform(ratio, 0, 0, ratio, 0, 0);
+        const count = Math.min(58, Math.max(24, Math.round((width * height) / 23000)));
+        particles = Array.from({ length: count }, () => ({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          vx: (Math.random() - 0.5) * 0.19,
+          vy: (Math.random() - 0.5) * 0.19
+        }));
+      };
+
+      const draw = () => {
+        context.clearRect(0, 0, width, height);
+        particles.forEach((particle, index) => {
+          if (!reduceMotion) {
+            particle.x += particle.vx;
+            particle.y += particle.vy;
+            if (particle.x < 0 || particle.x > width) particle.vx *= -1;
+            if (particle.y < 0 || particle.y > height) particle.vy *= -1;
+          }
+
+          context.beginPath();
+          context.arc(particle.x, particle.y, 1, 0, Math.PI * 2);
+          context.fillStyle = "rgba(123, 255, 193, 0.45)";
+          context.fill();
+
+          for (let otherIndex = index + 1; otherIndex < particles.length; otherIndex += 1) {
+            const other = particles[otherIndex];
+            const distance = Math.hypot(particle.x - other.x, particle.y - other.y);
+            if (distance < 135) {
+              context.beginPath();
+              context.moveTo(particle.x, particle.y);
+              context.lineTo(other.x, other.y);
+              context.strokeStyle = `rgba(92, 232, 236, ${0.14 * (1 - distance / 135)})`;
+              context.lineWidth = 0.7;
+              context.stroke();
+            }
+          }
+        });
+
+        if (!reduceMotion && !document.hidden) {
+          frame = window.requestAnimationFrame(draw);
+        }
+      };
+
+      resize();
+      draw();
+      window.addEventListener("resize", resize);
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+          window.cancelAnimationFrame(frame);
+        } else if (!reduceMotion) {
+          draw();
+        }
+      });
+    }
+
+    if (finePointer && reticle instanceof HTMLElement && targets.length > 0) {
+      document.addEventListener("pointermove", (event) => {
+        document.documentElement.style.setProperty("--pointer-x", `${event.clientX}px`);
+        document.documentElement.style.setProperty("--pointer-y", `${event.clientY}px`);
+        reticle.style.left = `${event.clientX}px`;
+        reticle.style.top = `${event.clientY}px`;
+
+        let hoveredTarget = null;
+        targets.forEach((target) => {
+          const bounds = target.getBoundingClientRect();
+          const isHovered = event.clientX >= bounds.left
+            && event.clientX <= bounds.right
+            && event.clientY >= bounds.top
+            && event.clientY <= bounds.bottom;
+          target.classList.toggle("targeted", isHovered);
+          target.style.transform = isHovered
+            ? `perspective(1100px) rotateY(${((event.clientX - bounds.left) / bounds.width - 0.5) * 3}deg) rotateX(${((event.clientY - bounds.top) / bounds.height - 0.5) * -3}deg)`
+            : "";
+          if (isHovered) hoveredTarget = target;
+        });
+        reticle.classList.toggle("over", hoveredTarget !== null);
+      });
+    }
+  })();
+</script>

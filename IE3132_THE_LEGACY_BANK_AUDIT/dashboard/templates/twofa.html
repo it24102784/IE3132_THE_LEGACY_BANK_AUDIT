@@ -1,0 +1,52 @@
+{% extends "base.html" %} {% block title %}Second-Factor Gate{% endblock %} {%
+block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-lg-8">
+    <section class="panel p-4 p-md-5">
+      <p class="eyebrow mb-2">Stage 04 / Authentication</p>
+      <h1 class="h3 mb-3">Legacy second-factor gate</h1>
+      {% if gate_passed %}
+      <div class="alert alert-success">
+        Gate accepted. SSH username: <span class="mono">legacyops</span>. The
+        SSH password is the credential decoded in Stage 3.
+      </div>
+      <a class="btn btn-success" href="{{ url_for('stages') }}"
+        >Return to stages</a
+      >
+      {% else %}
+      <p class="text-secondary">
+        Use the employee details and challenge value to calculate the response.
+      </p>
+      <dl class="row panel p-3 mx-0 mb-4">
+        <dt class="col-sm-5 text-secondary">Employee ID</dt>
+        <dd class="col-sm-7 mono">{{ employee_id }}</dd>
+        <dt class="col-sm-5 text-secondary">Legacy PIN</dt>
+        <dd class="col-sm-7 mono">{{ legacy_pin }}</dd>
+        <dt class="col-sm-5 text-secondary mb-0">Challenge value C</dt>
+        <dd class="col-sm-7 mono mb-0">{{ challenge_value }}</dd>
+      </dl>
+      <p class="small text-secondary">
+        Example: emp_id=2001, pin=1111, C=50000 → (2001×7 + 1111×3 + 50000) mod
+        100000 = 67340
+      </p>
+      <form method="post" action="{{ url_for('twofa') }}" class="mt-4">
+        <label class="form-label" for="response">Five-digit response</label>
+        <div class="input-group">
+          <input
+            class="form-control mono"
+            id="response"
+            name="response"
+            inputmode="numeric"
+            pattern="[0-9]{5}"
+            maxlength="5"
+            autocomplete="off"
+            required
+          />
+          <button class="btn btn-success" type="submit">Verify</button>
+        </div>
+      </form>
+      {% endif %}
+    </section>
+  </div>
+</div>
+{% endblock %}

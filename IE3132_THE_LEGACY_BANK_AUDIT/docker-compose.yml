@@ -1,0 +1,115 @@
+name: legacy-bank-ctf
+
+networks:
+  ctf_isolated_net:
+    name: ctf_isolated_net
+    driver: bridge
+    internal: true
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.10.10.0/24
+          gateway: 10.10.10.1
+  dashboard_ingress:
+    driver: bridge
+
+volumes:
+  dashboard_data:
+
+services:
+  # 0. Network tools for Stage 1 reconnaissance
+  kali_player:
+    build:
+      context: ./player
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    command: ["sleep", "infinity"]
+    networks:
+      ctf_isolated_net:
+        ipv4_address: 10.10.10.3
+
+  # 1. Dashboard (CTF Control Layer - Single Public Entry Point)
+  dashboard:
+    build:
+      context: .
+      dockerfile: dashboard/Dockerfile
+    container_name: ctf_dashboard
+    restart: unless-stopped
+    ports:
+      - "5001:80"
+    environment:
+      - FLASK_ENV=${FLASK_ENV:-production}
+      - DASHBOARD_PORT=80
+      - SECRET_KEY=${DASHBOARD_SECRET_KEY:-legacy_bank_control_secret_key_2026}
+      - TEAM_USERNAME=${TEAM_USERNAME:-redteam}
+      - TEAM_PASSWORD=${TEAM_PASSWORD:-audit2026}
+      - DATABASE_PATH=/data/dashboard.db
+    volumes:
+      - dashboard_data:/data
+    networks:
+      ctf_isolated_net:
+        ipv4_address: 10.10.10.2
+      dashboard_ingress: {}
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          'python -c ''import urllib.request; urllib.request.urlopen("http://localhost:80/health")'' || exit 1',
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # 2. Web Challenge Service (Isolated Staging Portal Target)
+  web_challenge:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: ctf_web_challenge
+    restart: unless-stopped
+    # Isolated: No public host ports exposed
+    ports:
+      - "8082:80" # TEMPORARY for testing - REMOVE before final
+    volumes:
+      - ./flags:/app/flags:ro
+    environment:
+      - FLASK_ENV=${FLASK_ENV:-production}
+      - WEB_PORT=80
+      - SECRET_KEY=${WEB_APP_SECRET_KEY:-legacy_bank_web_secret_key_2026}
+    networks:
+      ctf_isolated_net:
+        ipv4_address: 10.10.10.5
+      dashboard_ingress: {}
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          'python -c ''import urllib.request; urllib.request.urlopen("http://localhost:80/health")'' || exit 1',
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # 3. Linux Challenge Service (Isolated Linux Target)
+  linux_challenge:
+    build:
+      context: ./linux
+      dockerfile: Dockerfile
+    container_name: ctf_linux_challenge
+    restart: unless-stopped
+    # Isolated: No public host ports exposed
+    environment:
+      - ENVIRONMENT=${ENVIRONMENT:-production}
+    volumes:
+      - ./flags:/flags:ro
+    networks:
+      ctf_isolated_net:
+        ipv4_address: 10.10.10.10
+    healthcheck:
+      test: ["CMD-SHELL", "test -f /tmp/healthy || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 5s

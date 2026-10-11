@@ -207,9 +207,10 @@ def health_check():
 
 @app.route("/")
 def index():
-    """Send authenticated teams to their dashboard and others to login."""
-    endpoint = "stages" if "team_id" in session else "login"
-    return redirect(url_for(endpoint))
+    """Show the public landing page first and only redirect logged-in users to the dashboard."""
+    if "team_id" in session:
+        return redirect(url_for("stages"))
+    return render_template("index.html")
 
 
 @app.route("/login", methods=["GET", "POST"])

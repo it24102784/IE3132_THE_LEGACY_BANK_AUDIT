@@ -1,34 +1,243 @@
-{% extends "base.html" %} {% block title %}Scoreboard{% endblock %} {% block
-content %}
-<header class="mb-4">
-  <p class="eyebrow mb-2">IE3132 · Group 78</p>
-  <h1 class="h2 mb-1">Audit scoreboard</h1>
-  <p class="text-secondary mb-0">Team standings by total points.</p>
-</header>
-<div class="panel table-responsive">
-  <table class="table table-dark table-hover align-middle mb-0">
-    <thead>
-      <tr>
-        <th scope="col">Rank</th>
-        <th scope="col">Team</th>
-        <th scope="col" class="text-end">Points</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for team in teams %}
-      <tr>
-        <th scope="row">{{ loop.index }}</th>
-        <td>{{ team.username }}</td>
-        <td class="text-end mono">{{ team.score }}</td>
-      </tr>
-      {% else %}
-      <tr>
-        <td colspan="3" class="text-center text-secondary py-4">
-          No teams registered yet.
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</div>
+{% extends "base.html" %}
+{% block title %}Scoreboard{% endblock %}
+
+{% block extra_head %}
+<style>
+  .ctf-auth-page .scoreboard-page,
+  .ctf-auth-page .scoreboard-page * {
+    font-family: var(--ctf-code);
+  }
+
+  .scoreboard-page {
+    animation: board-arrive 550ms ease-out both;
+  }
+
+  .scoreboard-header {
+    position: relative;
+    color: var(--ctf-text);
+    padding: 1.6rem;
+    border: 1px solid rgba(104, 158, 161, 0.3);
+    border-radius: 4px;
+    background:
+      radial-gradient(ellipse at 100% 0%, rgba(31, 125, 95, 0.2), transparent 48%),
+      rgba(12, 20, 27, 0.92);
+    overflow: hidden;
+  }
+
+  .scoreboard-header::after {
+    content: "";
+    position: absolute;
+    top: -35%;
+    left: 0;
+    width: 100%;
+    height: 35%;
+    background: linear-gradient(to bottom, transparent, rgba(92, 232, 236, 0.07), transparent);
+    pointer-events: none;
+    animation: board-scan 5.5s linear infinite;
+  }
+
+  .board-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: var(--mint);
+    font: 700 0.72rem ui-monospace, SFMono-Regular, Consolas, monospace;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .board-status::before {
+    content: "";
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--mint);
+    box-shadow: 0 0 10px rgba(118, 224, 178, 0.85);
+    animation: status-pulse 1.8s ease-in-out infinite;
+  }
+
+  .board-title {
+    color: var(--ink);
+    text-shadow: 0 0 24px rgba(118, 224, 178, 0.15);
+  }
+
+  .board-panel {
+    border-radius: 4px;
+    overflow: hidden;
+    background: rgba(12, 20, 27, 0.92);
+    border: 1px solid rgba(104, 158, 161, 0.3);
+  }
+
+  .board-table {
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--ink);
+    --bs-table-hover-bg: rgba(118, 224, 178, 0.055);
+    --bs-table-hover-color: var(--ink);
+  }
+
+  .board-table thead th {
+    padding: 1rem 1.2rem;
+    color: #a8bfd2;
+    background: rgba(6, 13, 18, 0.8);
+    border-bottom: 1px solid var(--line);
+    font: 700 0.7rem ui-monospace, SFMono-Regular, Consolas, monospace;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .board-table tbody tr {
+    animation: row-arrive 420ms ease-out both;
+  }
+
+  .board-table tbody tr:nth-child(1) { animation-delay: 60ms; }
+  .board-table tbody tr:nth-child(2) { animation-delay: 120ms; }
+  .board-table tbody tr:nth-child(3) { animation-delay: 180ms; }
+  .board-table tbody tr:nth-child(n + 4) { animation-delay: 220ms; }
+
+  .board-table tbody td,
+  .board-table tbody th {
+    padding: 1rem 1.2rem;
+    border-color: rgba(43, 60, 76, 0.65);
+  }
+
+  .rank-chip {
+    display: inline-flex;
+    min-width: 2.25rem;
+    height: 2.25rem;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 9px;
+    background: rgba(148, 163, 184, 0.06);
+    color: #c1cfda;
+    font: 700 0.85rem ui-monospace, SFMono-Regular, Consolas, monospace;
+  }
+
+  .rank-chip.rank-gold {
+    color: #ffe08a;
+    border-color: rgba(255, 204, 87, 0.38);
+    background: rgba(255, 204, 87, 0.1);
+    box-shadow: 0 0 16px rgba(255, 204, 87, 0.09);
+  }
+
+  .rank-chip.rank-silver {
+    color: #d8e3ee;
+    border-color: rgba(205, 220, 232, 0.32);
+    background: rgba(205, 220, 232, 0.08);
+  }
+
+  .rank-chip.rank-bronze {
+    color: #e5ae83;
+    border-color: rgba(205, 127, 76, 0.35);
+    background: rgba(205, 127, 76, 0.09);
+  }
+
+  .team-name {
+    font-weight: 650;
+  }
+
+  .score-chip {
+    display: inline-flex;
+    min-width: 5.5rem;
+    align-items: center;
+    justify-content: center;
+    padding: 0.4rem 0.7rem;
+    border: 1px solid rgba(118, 224, 178, 0.2);
+    border-radius: 3px;
+    background: rgba(118, 224, 178, 0.07);
+    color: var(--mint);
+    font: 700 0.85rem ui-monospace, SFMono-Regular, Consolas, monospace;
+  }
+
+  .score-chip::before {
+    width: 0.38rem;
+    height: 0.38rem;
+    margin-right: 0.45rem;
+    border-radius: 50%;
+    background: var(--ctf-green);
+    box-shadow: 0 0 8px rgba(123, 255, 193, 0.7);
+    content: "";
+    animation: status-pulse 1.8s ease-in-out infinite;
+  }
+
+  .board-empty {
+    color: var(--muted);
+  }
+
+  @keyframes board-arrive {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes row-arrive {
+    from { opacity: 0; transform: translateY(7px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes status-pulse {
+    50% { opacity: 0.55; box-shadow: 0 0 3px rgba(118, 224, 178, 0.45); }
+  }
+
+  @keyframes board-scan {
+    from { top: -35%; }
+    to { top: 110%; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scoreboard-page,
+    .board-status::before,
+    .scoreboard-header::after,
+    .score-chip::before,
+    .board-table tbody tr {
+      animation: none;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block body_class %}ctf-auth-page{% endblock %}
+{% block content %}
+{% include "_auth_effects.html" %}
+<section class="scoreboard-page">
+  <header class="scoreboard-header ctf-auth-target mb-4">
+    <div class="board-status mb-3">IE3132 · Group 78 · Audit board</div>
+    <h1 class="board-title h2 fw-bold mb-2">CTF Team Leaderboard</h1>
+    <p class="text-secondary mb-0">
+      Track the teams making progress through the Legacy Bank security audit.
+    </p>
+  </header>
+
+  <div class="board-panel ctf-auth-target table-responsive">
+    <table class="table board-table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th scope="col">Rank</th>
+          <th scope="col">Team</th>
+          <th scope="col" class="text-end">Points</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for team in teams %}
+        {% set rank = loop.index %}
+        <tr>
+          <th scope="row">
+            <span class="rank-chip{% if rank == 1 %} rank-gold{% elif rank == 2 %} rank-silver{% elif rank == 3 %} rank-bronze{% endif %}">
+              {% if rank == 1 %}♛{% else %}{{ rank }}{% endif %}
+            </span>
+          </th>
+          <td class="team-name">{{ team.username }}</td>
+          <td class="text-end"><span class="score-chip">{{ team.score }} pts</span></td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="3" class="board-empty text-center py-5">
+            <div class="mono text-info mb-2">[ NO TEAM SIGNALS DETECTED ]</div>
+            No teams registered yet. Be the first to join the audit.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
 {% endblock %}

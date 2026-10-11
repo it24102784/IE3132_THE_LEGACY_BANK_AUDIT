@@ -1,5 +1,5 @@
-{% extends "base.html" %} {% block title %}Audit Stages{% endblock %} {% block
-content %}
+{% extends "base.html" %} {% block title %}Audit Stages{% endblock %} {% block body_class %}ctf-auth-page{% endblock %} {% block content %}
+{% include "_auth_effects.html" %}
 <header
   class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-4"
 >
@@ -10,11 +10,11 @@ content %}
       Your next stage is ready. Complete it to continue.
     </p>
   </div>
-  <div class="panel px-4 py-3" aria-label="Team score">
+  <div class="panel px-4 py-3 ctf-score-panel" aria-label="Team score">
     <span class="text-secondary small d-block"
       >{{ team.username }} · SCORE</span
     >
-    <strong class="h3 mono mb-0"
+    <strong class="h3 mono mb-0 ctf-score-live"
       >{{ team.score }} <span class="fs-6 text-secondary">pts</span></strong
     >
   </div>
@@ -24,7 +24,7 @@ content %}
   {% for stage in stages if stage.unlocked %}
   <div class="col-12 col-lg-6">
     <article
-      class="panel stage-card p-3 p-md-4 {{ 'opacity-50' if not stage.unlocked else '' }}"
+      class="panel stage-card ctf-auth-target p-3 p-md-4 {{ 'opacity-50' if not stage.unlocked else '' }}"
     >
       <div class="d-flex justify-content-between gap-3">
         <div>

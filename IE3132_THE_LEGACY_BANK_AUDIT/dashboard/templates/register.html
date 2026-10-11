@@ -1,0 +1,135 @@
+{% extends "base.html" %} {% block title %}Team Registration{% endblock %} {%
+block content %}
+<div
+  class="row justify-content-center align-items-center"
+  style="min-height: 68vh"
+>
+  <div class="col-12 col-lg-8 col-xl-7">
+    <section class="panel p-4 p-md-5">
+      <p class="eyebrow mb-2">Authorized assessment</p>
+      <h1 class="h3 mb-2">Register your team</h1>
+      <p class="text-secondary mb-4">
+        Create a team account for the Legacy Bank Audit.
+      </p>
+
+      {% if errors %}
+      <div class="alert alert-danger" role="alert">
+        <ul class="mb-0">
+          {% for error in errors %}
+          <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      <form method="post" action="{{ url_for('register') }}">
+        <div class="mb-3">
+          <label class="form-label" for="team_name">Team name</label>
+          <input
+            class="form-control"
+            id="team_name"
+            name="team_name"
+            value="{{ form_data.get('team_name', '') }}"
+            minlength="3"
+            maxlength="20"
+            pattern="[A-Za-z0-9_-]+"
+            autocomplete="organization"
+            required
+          />
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="university">University / institute</label>
+          <select class="form-select" id="university" name="university" required>
+            <option value="">Choose your university or institute</option>
+            {% for category, universities in university_options.items() %}
+            <optgroup label="{{ category }}">
+              {% for university in universities %}
+              <option value="{{ university }}" {{ 'selected' if form_data.get('university') == university else '' }}>{{ university }}</option>
+              {% endfor %}
+            </optgroup>
+            {% endfor %}
+            <option value="Other / not listed" {{ 'selected' if form_data.get('university') == 'Other / not listed' else '' }}>Other / not listed</option>
+          </select>
+          <div class="form-text text-secondary">Choose Other / not listed if your institution is not shown.</div>
+        </div>
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label class="form-label" for="password">Password</label>
+            <input
+              class="form-control"
+              id="password"
+              name="password"
+              type="password"
+              minlength="8"
+              autocomplete="new-password"
+              required
+            />
+          </div>
+          <div class="col-md-6">
+            <label class="form-label" for="confirm_password"
+              >Confirm password</label
+            >
+            <input
+              class="form-control"
+              id="confirm_password"
+              name="confirm_password"
+              type="password"
+              minlength="8"
+              autocomplete="new-password"
+              required
+            />
+          </div>
+        </div>
+        <fieldset class="mb-4">
+          <legend class="h6 mb-3">Team members</legend>
+          <div class="mb-3">
+            <label class="form-label" for="member1">Member 1 (required)</label>
+            <input
+              class="form-control"
+              id="member1"
+              name="member1"
+              value="{{ form_data.get('member1', '') }}"
+              autocomplete="name"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="member2">Member 2</label>
+            <input
+              class="form-control"
+              id="member2"
+              name="member2"
+              value="{{ form_data.get('member2', '') }}"
+              autocomplete="name"
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="member3">Member 3</label>
+            <input
+              class="form-control"
+              id="member3"
+              name="member3"
+              value="{{ form_data.get('member3', '') }}"
+              autocomplete="name"
+            />
+          </div>
+          <div>
+            <label class="form-label" for="member4">Member 4</label>
+            <input
+              class="form-control"
+              id="member4"
+              name="member4"
+              value="{{ form_data.get('member4', '') }}"
+              autocomplete="name"
+            />
+          </div>
+        </fieldset>
+        <button class="btn btn-success w-100" type="submit">Create team</button>
+      </form>
+      <p class="small text-secondary text-center mt-3 mb-0">
+        Already registered? <a href="{{ url_for('login') }}">Sign in</a>
+      </p>
+    </section>
+  </div>
+</div>
+{% endblock %}

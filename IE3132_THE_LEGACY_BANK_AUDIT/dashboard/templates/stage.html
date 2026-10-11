@@ -1,0 +1,202 @@
+{% extends "base.html" %} {% block title %}Stage {{ stage.id }} · {{ stage.title
+}}{% endblock %} {% block content %}
+<p class="eyebrow mb-2">
+  Stage {{ '%02d'|format(stage.id) }} · {{ stage.domain }}
+</p>
+<div
+  class="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-3 mb-4"
+>
+  <div>
+    <h1 class="h2 mb-2">{{ stage.title }}</h1>
+    <p class="text-secondary mb-0">
+      {{ stage.difficulty }} · {{ stage.points }} points
+    </p>
+  </div>
+  <div class="d-flex gap-2">
+    {% if stage.id == 6 %}
+    <a
+      class="btn btn-sm btn-outline-info"
+      href="{{ url_for('stage_detail', stage_id=5) }}"
+      >Review Stage 5</a
+    >
+    {% endif %}
+    <a class="btn btn-sm btn-outline-light" href="{{ url_for('stages') }}"
+      >All stages</a
+    >
+  </div>
+</div>
+
+{% if solved %}
+<div class="alert alert-success mb-3" role="status">
+  <strong>Solved</strong> · Points have already been awarded.
+</div>
+{% endif %}
+
+<section class="panel p-3 p-md-4 mb-3" aria-labelledby="briefing-title">
+  <h2 class="h5" id="briefing-title">Briefing</h2>
+  <p class="mb-0">{{ stage.briefing }}</p>
+</section>
+
+{% if stage.id == 1 %}
+<section class="panel p-3 p-md-4 mb-3" aria-labelledby="how-to-play-title">
+  <h2 class="h5 mb-3" id="how-to-play-title">How to play</h2>
+  <ol class="mb-0 ps-3">
+    <li class="mb-2">
+      Open the bundled network-tools terminal with
+      <code>docker compose exec kali_player bash</code> — this whole stage is
+      played there, not in your browser.
+    </li>
+    <li class="mb-2">
+      You are given a network range: 10.10.10.0/24. Your first job is to find
+      which machines are alive on it.
+    </li>
+    <li class="mb-2">
+      For each live machine, find out which ports are open and what services are
+      running on them.
+    </li>
+    <li class="mb-2">
+      If you find a web service, inspect the full HTTP response, including the
+      parts your browser does not show you.
+    </li>
+    <li>
+      When you find something that looks like a flag (format LB{...}), come back
+      here and submit it below.
+    </li>
+  </ol>
+</section>
+{% endif %} {% if stage.id == 4 and not stage4_gate and not solved %}
+<section class="panel p-3 mb-3">
+  <p class="mb-2">
+    Pass the second-factor check before submitting your Stage 4 flag.
+  </p>
+  <a class="btn btn-sm btn-outline-info" href="{{ url_for('twofa') }}"
+    >Open second-factor check</a
+  >
+</section>
+{% endif %} {% if stage.id == 5 %}
+<section class="panel p-3 p-md-4 mb-3" aria-labelledby="how-to-play-title">
+  <h2 class="h5 mb-3" id="how-to-play-title">Starting position</h2>
+  <p>
+    From the project folder, open the bundled attacker terminal and connect to
+    the server. At the password prompt, enter the credential recovered in Stage
+    3; it is also shown on the Stage 4 success page.
+  </p>
+  <pre class="mono"><code>docker compose exec kali_player bash
+ssh vaultadmin@10.10.10.10</code></pre>
+  <h3 class="h6 mt-4">How to approach it</h3>
+  <ol class="ps-3 mb-0">
+    <li class="mb-3">
+      <strong>Check your access.</strong> Run <code>whoami</code> and
+      <code>id</code> to confirm you are a low-privilege user. You will not need
+      <code>sudo</code> for this challenge.
+    </li>
+    <li class="mb-3">
+      <strong>Look for scheduled jobs.</strong> Check the system crontab, the
+      cron drop-in directory, and your own crontab.
+      <pre class="mono mt-2 mb-1"><code>cat /etc/crontab
+ls -la /etc/cron.d
+crontab -l</code></pre>
+      Look for an entry that runs as <code>root</code>. An empty user crontab is
+      normal.
+    </li>
+    <li class="mb-3">
+      <strong>Follow the job.</strong> Read its entry and inspect the script
+      named there. Note what the script runs and which files or directories it
+      uses.
+      <pre
+        class="mono mt-2 mb-1"
+      ><code>cat &lt;script-path-from-job&gt;</code></pre>
+    </li>
+    <li class="mb-3">
+      <strong>Compare permissions.</strong> Check whether your account can
+      modify a script that is run by root.
+      <pre
+        class="mono mt-2 mb-1"
+      ><code>ls -l &lt;script-path-from-job&gt;</code></pre>
+    </li>
+    <li>
+      <strong>Search nearby.</strong> List the directory containing the script
+      and inspect its neighboring files for the guarded clue. Submit the
+      <code>LB{...}</code> flag you find to unlock Stage 6.
+    </li>
+  </ol>
+</section>
+{% endif %} {% if stage.id == 6 %}
+<section class="panel p-3 p-md-4 mb-3" aria-labelledby="stage-six-guide-title">
+  <h2 class="h5 mb-3" id="stage-six-guide-title">Escalation strategy</h2>
+  <p>
+    Continue from the low-privilege SSH account you used in Stage 5. If you
+    closed that session, reconnect from the project folder:
+  </p>
+  <pre class="mono"><code>docker compose exec kali_player bash
+ssh vaultadmin@10.10.10.10</code></pre>
+  <ol class="ps-3 mb-0">
+    <li class="mb-2">
+      Confirm you are still the low-privilege user, then revisit the scheduled
+      job and script you identified in Stage 5.
+    </li>
+    <li class="mb-2">
+      Verify which account runs the job and whether your account can modify its
+      script. Think about the consequence of root executing content you can
+      change.
+    </li>
+    <li class="mb-2">
+      Use a harmless test to confirm the scheduled script can perform an action
+      with root privileges. Wait for the job's next run and check the result.
+    </li>
+    <li>
+      Apply the same idea to make the protected flag readable from your account,
+      then submit it here.
+    </li>
+  </ol>
+</section>
+{% endif %}
+
+<section class="panel p-3 p-md-4 mb-3" aria-labelledby="hints-title">
+  <h2 class="h5 mb-3" id="hints-title">Hints</h2>
+  <div class="d-flex flex-column gap-3">
+    {% for hint in hints %}
+    <div
+      class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2"
+    >
+      {% if hint.revealed %}
+      <p class="mb-0">
+        <span class="text-secondary">Hint {{ hint.number }}:</span> {{ hint.text
+        }}
+      </p>
+      {% else %}
+      <span class="small text-secondary">Hint {{ hint.number }}</span>
+      <form
+        method="post"
+        action="{{ url_for('reveal_hint', stage_id=stage.id, n=hint.number) }}"
+        onsubmit="return confirm('Reveal this hint and deduct {{ hint.cost }} points from your team score?');"
+      >
+        <button class="btn btn-sm btn-outline-warning" type="submit">
+          Reveal (-{{ hint.cost }} pts)
+        </button>
+      </form>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% if not solved %}
+<section class="panel p-3 p-md-4" aria-labelledby="submit-title">
+  <h2 class="h5 mb-3" id="submit-title">Flag submission</h2>
+  <form method="post" action="{{ url_for('submit', stage_id=stage.id) }}">
+    <label class="form-label" for="flag">Enter the flag</label>
+    <div class="input-group">
+      <input
+        class="form-control mono"
+        id="flag"
+        name="flag"
+        placeholder="LB{...}"
+        autocomplete="off"
+        required
+      />
+      <button class="btn btn-success" type="submit">Submit flag</button>
+    </div>
+  </form>
+</section>
+{% endif %} {% endblock %}
