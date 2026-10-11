@@ -1,0 +1,30 @@
+{% extends "portal_base.html" %}
+{% block title %}Access verified{% endblock %}
+{% block content %}
+<section class="portal-success-wrap" aria-labelledby="success-title">
+  <div class="portal-success-mark" aria-hidden="true">✓</div>
+  <p class="portal-eyebrow">LEGACY BANK ACCOUNT SECURITY</p>
+  <h1 id="success-title" class="portal-title">Identity confirmed.</h1>
+  <p class="portal-lead">Welcome, <strong>{{ user }}</strong>. Your identity has been verified.</p>
+
+  <div class="portal-success-grid">
+    <section class="portal-card">
+      <p class="portal-eyebrow">ACCOUNT SECURITY</p>
+      <h2>Verification confirmation</h2>
+      <code class="portal-flag-value">{{ stage4_flag }}</code>
+    </section>
+    <section class="portal-card">
+      <p class="portal-eyebrow">EMPLOYEE SERVICES</p>
+      <h2>Secure access details</h2>
+      <dl class="portal-data-list">
+        <div><dt>Host</dt><dd><code>10.10.10.10</code></dd></div>
+        <div><dt>Username</dt><dd><code>vaultadmin</code></dd></div>
+        <div><dt>Password</dt><dd>Use your Stage 3 decoded credential</dd></div>
+      </dl>
+    </section>
+  </div>
+  <a class="portal-button portal-success-button" href="{{ url_for('portal_dashboard') }}">
+    <span>Return to employee account</span><span aria-hidden="true">→</span>
+  </a>
+</section>
+{% endblock %}

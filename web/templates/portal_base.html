@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f2f0e9">
+    <title>{% block title %}Employee Portal{% endblock %} · Legacy Bank</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/legacy-bank.css') }}">
+  </head>
+  <body class="bank-portal">
+    <div class="utility-bar">
+      <div class="site-width utility-inner">
+        <span>PERSONAL BANKING <i>|</i> BUSINESS BANKING</span>
+        <span>Customer service: 1-800-555-0198</span>
+      </div>
+    </div>
+
+    <header class="site-header">
+      <div class="site-width header-main">
+        <a class="bank-brand" href="/" aria-label="Legacy Bank home">
+          <span class="bank-mark" aria-hidden="true">LB</span>
+          <span class="bank-name">LEGACY <strong>BANK</strong><small>TRUSTED SINCE 1987</small></span>
+        </a>
+        <div class="header-actions">
+          <a class="employee-link" href="/">Return to home</a>
+          {% if authenticated %}
+          <a class="online-banking" href="{{ url_for('portal_logout') }}">SIGN OUT <span aria-hidden="true">→</span></a>
+          {% else %}
+          <a class="online-banking" href="{{ url_for('portal_login') }}">EMPLOYEE LOGIN <span aria-hidden="true">→</span></a>
+          {% endif %}
+        </div>
+      </div>
+      <nav class="main-nav" aria-label="Main navigation">
+        <div class="site-width nav-inner">
+          <a href="/">Personal</a>
+          <a href="/">Business</a>
+          <a href="/">About Legacy</a>
+          <a href="tel:18005550198">Help &amp; support</a>
+        </div>
+      </nav>
+    </header>
+
+    <main class="portal-main site-width">
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+      <div class="site-width footer-main">
+        <a class="bank-brand footer-brand" href="/" aria-label="Legacy Bank home">
+          <span class="bank-mark" aria-hidden="true">LB</span>
+          <span class="bank-name">LEGACY <strong>BANK</strong><small>TRUSTED SINCE 1987</small></span>
+        </a>
+        <div class="footer-contact">
+          <strong>We’re here to help.</strong>
+          <span>Customer service <a href="tel:18005550198">1-800-555-0198</a></span>
+          <span>Monday–Friday, 8:00 a.m.–6:00 p.m.</span>
+        </div>
+        <span class="footer-employee">Member FDIC · Equal Housing Lender</span>
+      </div>
+      <div class="site-width footer-legal">
+        <span>© 2026 Legacy Bank. All rights reserved.</span>
+        <span>Member FDIC <i>·</i> Equal Housing Lender</span>
+      </div>
+    </footer>
+  </body>
+</html>

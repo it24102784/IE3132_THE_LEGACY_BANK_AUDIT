@@ -68,9 +68,9 @@ services:
       dockerfile: Dockerfile
     container_name: ctf_web_challenge
     restart: unless-stopped
-    # Isolated: No public host ports exposed
+    # Bind to localhost so the challenge remains unavailable to other machines.
     ports:
-      - "8082:80" # TEMPORARY for testing - REMOVE before final
+      - "127.0.0.1:8082:80"
     volumes:
       - ./flags:/app/flags:ro
     environment:

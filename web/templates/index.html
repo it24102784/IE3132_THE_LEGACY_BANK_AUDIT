@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f2f0e9">
+    <meta name="description" content="Legacy Bank — serving our customers and communities since 1987.">
+    <title>Legacy Bank — Your bank, for generations</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/legacy-bank.css') }}">
+  </head>
+  <body>
+    <!-- KEY IS legacy bank no caps and no space -->
+    <div class="utility-bar">
+      <div class="site-width utility-inner">
+        <span>PERSONAL BANKING <i>|</i> BUSINESS BANKING</span>
+        <span>Customer service: 1-800-555-0198</span>
+      </div>
+    </div>
+
+    <header class="site-header">
+      <div class="site-width header-main">
+        <a class="bank-brand" href="/" aria-label="Legacy Bank home">
+          <span class="bank-mark" aria-hidden="true">LB</span>
+          <span class="bank-name">LEGACY <strong>BANK</strong><small>TRUSTED SINCE 1987</small></span>
+        </a>
+        <div class="header-actions">
+          <a class="employee-link" href="{{ url_for('portal_login') }}">Employee access</a>
+          <a class="online-banking" href="{{ url_for('portal_login') }}">ONLINE BANKING <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+      <nav class="main-nav" aria-label="Main navigation">
+        <div class="site-width nav-inner">
+          <a href="#personal">Personal</a>
+          <a href="#business">Business</a>
+          <a href="#about">About Legacy</a>
+          <a href="#help">Help &amp; support</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="site-width hero-content">
+          <div class="hero-copy">
+            <p class="overline">A BANKING PARTNER YOU CAN COUNT ON</p>
+            <h1>Your future.<br><span>Our commitment.</span></h1>
+            <p class="hero-text">
+              For generations, we’ve helped people and businesses make the most
+              of every opportunity. Whatever you’re planning, let’s make it happen together.
+            </p>
+            <a class="primary-link" href="#personal">Explore your banking options <span aria-hidden="true">→</span></a>
+          </div>
+          <aside class="welcome-panel" aria-label="Welcome to Legacy Bank">
+            <div class="panel-rule"></div>
+            <p class="overline">WELCOME TO LEGACY</p>
+            <h2>Here for every<br>chapter.</h2>
+            <p>Personal service, straightforward advice, and banking built around you.</p>
+            <a href="#about">Get to know us <span aria-hidden="true">→</span></a>
+            <span class="panel-reference">MEMBER FDIC <i>·</i> EQUAL HOUSING LENDER</span>
+          </aside>
+        </div>
+      </section>
+
+      <section class="notice-strip" id="help">
+        <div class="site-width notice-inner">
+          <span class="notice-icon" aria-hidden="true">i</span>
+          <p><strong>Need help?</strong> Our customer care team is ready to assist you.</p>
+          <a href="tel:18005550198">Call 1-800-555-0198</a>
+        </div>
+      </section>
+
+      <section class="services site-width" id="personal">
+        <div class="section-heading">
+          <p class="overline">BANKING THAT FITS YOUR LIFE</p>
+          <h2>What can we help you with?</h2>
+          <p>Simple, reliable banking for the things that matter most.</p>
+        </div>
+        <div class="service-grid">
+          <article class="service-card">
+            <span class="service-number">01</span>
+            <h3>Everyday banking</h3>
+            <p>Manage your money with dependable accounts and personal support.</p>
+            <a href="{{ url_for('portal_login') }}">Learn about banking <span aria-hidden="true">→</span></a>
+          </article>
+          <article class="service-card" id="business">
+            <span class="service-number">02</span>
+            <h3>Borrow with confidence</h3>
+            <p>Find a lending option that helps you take your next step.</p>
+            <a href="{{ url_for('portal_login') }}">Explore lending <span aria-hidden="true">→</span></a>
+          </article>
+          <article class="service-card">
+            <span class="service-number">03</span>
+            <h3>Business services</h3>
+            <p>Practical financial tools and advice for businesses of every size.</p>
+            <a href="{{ url_for('portal_login') }}">Bank for business <span aria-hidden="true">→</span></a>
+          </article>
+        </div>
+      </section>
+
+      <section class="heritage" id="about">
+        <div class="site-width heritage-inner">
+          <div>
+            <p class="overline">ROOTED IN YOUR COMMUNITY</p>
+            <h2>Good banking is built on good relationships.</h2>
+          </div>
+          <p>
+            Since 1987, Legacy Bank has believed that listening comes first.
+            We’re proud to serve our neighbors with care, experience, and a
+            familiar face when you need one.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="site-width footer-main">
+        <a class="bank-brand footer-brand" href="/" aria-label="Legacy Bank home">
+          <span class="bank-mark" aria-hidden="true">LB</span>
+          <span class="bank-name">LEGACY <strong>BANK</strong><small>TRUSTED SINCE 1987</small></span>
+        </a>
+        <div class="footer-contact" id="help-contact">
+          <strong>We’re here to help.</strong>
+          <span>Customer service <a href="tel:18005550198">1-800-555-0198</a></span>
+          <span>Monday–Friday, 8:00 a.m.–6:00 p.m.</span>
+        </div>
+        <a class="footer-employee" href="{{ url_for('portal_login') }}">Employee access</a>
+      </div>
+      <div class="site-width footer-legal">
+        <span>© 2026 Legacy Bank. All rights reserved.</span>
+        <span>Member FDIC <i>·</i> Equal Housing Lender</span>
+      </div>
+    </footer>
+  </body>
+</html>

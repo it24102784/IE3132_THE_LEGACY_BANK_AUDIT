@@ -1,0 +1,91 @@
+{% extends "portal_base.html" %}
+{% block title %}Employee dashboard{% endblock %}
+{% block content %}
+<section class="portal-dashboard" aria-labelledby="dashboard-title">
+  <header class="portal-page-heading">
+    <div>
+      <p class="portal-eyebrow">LEGACY BANK EMPLOYEE SERVICES</p>
+      <h1 id="dashboard-title" class="portal-title">Employee account</h1>
+      <p class="portal-lead">Welcome back, <strong>{{ user }}</strong>. Here are your account details and employee resources.</p>
+    </div>
+    <span class="portal-role">{{ role }}</span>
+  </header>
+
+  <div class="portal-stat-grid">
+    <article class="portal-stat-card">
+      <span class="portal-stat-label">EMPLOYEE NUMBER</span>
+      <strong>{{ employee_id }}</strong>
+      <span class="portal-stat-caption">Your employee account</span>
+    </article>
+    <article class="portal-stat-card">
+      <span class="portal-stat-label">SECURITY PIN</span>
+      <strong>{{ pin }}</strong>
+      <span class="portal-stat-caption">For account verification</span>
+    </article>
+    <article class="portal-stat-card portal-stat-status">
+      <span class="portal-stat-label">ACCOUNT STATUS</span>
+      <strong>ACTIVE</strong>
+      <span class="portal-stat-caption">Your account is available</span>
+    </article>
+  </div>
+
+  <div class="portal-dashboard-grid">
+    <section class="portal-card" aria-labelledby="profile-title">
+      <div class="portal-section-heading">
+        <span class="portal-section-index">01</span>
+        <div>
+          <p class="portal-eyebrow">YOUR INFORMATION</p>
+          <h2 id="profile-title">Employee profile</h2>
+        </div>
+      </div>
+      <dl class="portal-data-list">
+        <div><dt>Account</dt><dd>{{ user }}</dd></div>
+        <div><dt>Role</dt><dd>{{ role }}</dd></div>
+        <div><dt>Employee ID</dt><dd><code>{{ employee_id }}</code></dd></div>
+      </dl>
+    </section>
+
+    <section class="portal-card portal-notice-card" aria-labelledby="audit-title">
+      <div class="portal-section-heading">
+        <span class="portal-section-index">02</span>
+        <div>
+          <p class="portal-eyebrow">ACCOUNT INFORMATION</p>
+          <h2 id="audit-title">Account notice</h2>
+        </div>
+      </div>
+      <p class="portal-card-copy">Your current account notice is shown below.</p>
+      <p class="portal-flag"><span>Account notice</span><code>{{ stage2_flag }}</code></p>
+    </section>
+
+    <section class="portal-card" aria-labelledby="resources-title">
+      <div class="portal-section-heading">
+        <span class="portal-section-index">03</span>
+        <div>
+          <p class="portal-eyebrow">EMPLOYEE RESOURCES</p>
+          <h2 id="resources-title">Documents</h2>
+        </div>
+      </div>
+      <p class="portal-card-copy">Access the employee document currently available in the system.</p>
+      <a class="portal-resource-link" href="{{ url_for('portal_config') }}">
+        <span><span class="portal-resource-icon" aria-hidden="true">↓</span> View available document</span>
+        <span aria-hidden="true">↗</span>
+      </a>
+    </section>
+
+    <section class="portal-card portal-security-card" aria-labelledby="ssh-title">
+      <div class="portal-section-heading">
+        <span class="portal-section-index">04</span>
+        <div>
+          <p class="portal-eyebrow">ACCOUNT SECURITY</p>
+          <h2 id="ssh-title">Identity verification</h2>
+        </div>
+      </div>
+      <p class="portal-card-copy">Verify your identity to access additional employee services.</p>
+      <a class="portal-button portal-button-secondary" href="{{ url_for('twofa_gate') }}">
+        <span>Verify my identity</span><span aria-hidden="true">→</span>
+      </a>
+    </section>
+  </div>
+  <!-- KEY IS legacy bank no caps and no space -->
+</section>
+{% endblock %}

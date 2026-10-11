@@ -1,0 +1,58 @@
+{% extends "portal_base.html" %}
+{% block title %}Second-factor verification{% endblock %}
+{% block content %}
+<section class="portal-auth-layout portal-2fa-layout" aria-labelledby="twofa-title">
+  <div class="portal-intro">
+    <p class="portal-eyebrow">LEGACY BANK ACCOUNT SECURITY</p>
+    <h1 id="twofa-title" class="portal-title">Verify your identity.</h1>
+    <p class="portal-lead">
+      To protect your employee account, please complete this additional
+      identity verification step.
+    </p>
+    <div class="portal-challenge-readout">
+      <span>VERIFICATION CHALLENGE</span>
+      <strong>{{ challenge }}</strong>
+    </div>
+  </div>
+
+  <section class="portal-card portal-2fa-card">
+    <div class="portal-card-heading">
+      <div>
+        <p class="portal-eyebrow">ACCOUNT SECURITY</p>
+        <h2>Verify your account</h2>
+      </div>
+      <span class="portal-lock" aria-hidden="true">02</span>
+    </div>
+
+    <div class="portal-challenge-details">
+      <div><span>Employee ID</span><strong>{{ employee_id }}</strong></div>
+      <div><span>Challenge value</span><strong>{{ challenge }}</strong></div>
+    </div>
+
+    <div class="portal-examples">
+      <h3>Verification examples</h3>
+      <p class="portal-card-copy">Use these examples to complete the security check.</p>
+      {% for example in examples %}
+      <div class="portal-example-row">
+        <span>ID {{ example[0] }} <i>·</i> PIN {{ example[1] }} <i>·</i> C {{ example[2] }}</span>
+        <code>{{ example[3] }}</code>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% if error %}
+    <div class="portal-alert" role="alert">{{ error }}</div>
+    {% endif %}
+    <form method="post" action="{{ url_for('twofa_gate') }}" class="portal-form">
+      <div class="portal-field">
+        <label for="response">Verification code</label>
+        <input id="response" name="response" type="text" inputmode="numeric" autocomplete="off" required>
+      </div>
+      <button class="portal-button" type="submit">
+        <span>Continue securely</span><span aria-hidden="true">→</span>
+      </button>
+    </form>
+    <a class="portal-back-link" href="{{ url_for('portal_dashboard') }}">← Back to dashboard</a>
+  </section>
+</section>
+{% endblock %}

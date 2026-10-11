@@ -1,0 +1,47 @@
+{% extends "portal_base.html" %}
+{% block title %}Employee sign in{% endblock %}
+{% block content %}
+<section class="portal-auth-layout" aria-labelledby="portal-title">
+  <div class="portal-intro">
+    <p class="portal-eyebrow">LEGACY BANK EMPLOYEE SERVICES</p>
+    <h1 id="portal-title" class="portal-title">Welcome back.</h1>
+    <p class="portal-lead">
+      Sign in to access your employee account and internal banking services.
+      For your security, please do not share your password.
+    </p>
+    <div class="login-assurance">
+      <span class="assurance-mark" aria-hidden="true">✓</span>
+      <span><strong>Your security matters.</strong><small>Access is limited to authorized Legacy Bank employees.</small></span>
+    </div>
+  </div>
+
+  <section class="portal-card portal-login-card">
+    <div class="portal-card-heading">
+      <div>
+        <p class="portal-eyebrow">EMPLOYEE ONLINE SERVICES</p>
+        <h2>Employee sign in</h2>
+      </div>
+    </div>
+    <p class="portal-card-copy">Enter your username and password to continue.</p>
+
+    {% if error %}
+    <div class="portal-alert" role="alert">{{ error }}</div>
+    {% endif %}
+
+    <form method="post" action="{{ url_for('portal_login') }}" class="portal-form">
+      <div class="portal-field">
+        <label for="username">Username</label>
+        <input id="username" name="username" type="text" autocomplete="username" required autofocus>
+      </div>
+      <div class="portal-field">
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required>
+      </div>
+      <button class="portal-button" type="submit">
+        <span>Sign in securely</span><span aria-hidden="true">→</span>
+      </button>
+    </form>
+    <p class="portal-form-note">Authorized employees only. Sign out when you’re finished.</p>
+  </section>
+</section>
+{% endblock %}
